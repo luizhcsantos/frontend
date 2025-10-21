@@ -1,0 +1,261 @@
+.homepage-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 2rem;
+    font-family: sans-serif;
+    text-align: center;
+}
+
+.homepage-header h1 {
+    color: #2c3e50;
+}
+
+.homepage-main {
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.doacao-box, .membros-box {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.doacao-box h2, .membros-box h3 {
+    margin-top: 0;
+    color: #34495e;
+}
+
+.input-group {
+    margin-bottom: 1rem;
+    text-align: left;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 1rem;
+}
+
+.payment-method {
+    border: none;
+    text-align: left;
+    margin-bottom: 1rem;
+}
+
+.payment-method legend {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.payment-method div {
+    display: inline-block;
+    margin-right: 1.5rem;
+}
+
+.doar-button, .login-button, .cadastro-button {
+    width: 100%;
+    padding: 0.75rem;
+    border: none;
+    border-radius: 4px;
+    font-size: 1.1rem;
+    color: white;
+    cursor: pointer;
+    margin-top: 1rem;
+}
+
+.doar-button {
+    background-color: #27ae60;
+}
+
+.doar-button:disabled {
+    background-color: #95a5a6;
+    cursor: not-allowed;
+}
+
+.doar-button:hover:not(:disabled) {
+    background-color: #2ecc71;
+}
+
+.botoes-membros {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.login-button {
+    background-color: #3498db;
+}
+
+.login-button:hover {
+    background-color: #5dade2;
+}
+
+.cadastro-button {
+    background-color: #8e44ad;
+}
+
+.cadastro-button:hover {
+    background-color: #9b59b6;
+}
+
+.error-message {
+    color: #c0392b;
+    font-weight: bold;
+}
+
+.home-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    animation: fadeIn 0.5s ease-out;
+}
+
+.home-hero {
+    padding: 4rem 2rem;
+    text-align: center;
+    background-color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 2rem;
+}
+
+.home-hero h1 {
+    font-size: 3rem;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+    font-weight: 700;
+}
+
+.home-hero p {
+    font-size: 1.2rem;
+    color: #576574;
+    max-width: 800px;
+    margin: 0 auto 2rem;
+}
+
+.home-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+.home-button {
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+    min-width: 200px;
+}
+
+.primary-button {
+    background-color: #4a90e2;
+    color: white;
+    border: none;
+}
+
+.primary-button:hover {
+    background-color: #357abd;
+    transform: translateY(-2px);
+}
+
+.secondary-button {
+    background-color: white;
+    color: #4a90e2;
+    border: 2px solid #4a90e2;
+}
+
+.secondary-button:hover {
+    background-color: #4a90e2;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.home-features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.feature-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+}
+
+.feature-card h3 {
+    color: #2c3e50;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+}
+
+.feature-card p {
+    color: #576574;
+    line-height: 1.6;
+}
+
+.home-footer {
+    margin-top: auto;
+    text-align: center;
+    padding: 2rem;
+    background-color: rgba(255, 255, 255, 0.9);
+}
+
+@media (max-width: 768px) {
+    .home-hero h1 {
+        font-size: 2.5rem;
+    }
+
+    .home-buttons {
+        flex-direction: column;
+        align-items: center;
+        padding: 0 1rem;
+    }
+
+    .home-button {
+        width: 100%;
+        max-width: 300px;
+    }
+
+    .feature-card {
+        margin: 1rem;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

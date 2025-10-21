@@ -1,0 +1,154 @@
+/* Container principal */
+.login-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    padding: 20px;
+}
+
+/* Cabeçalho */
+.login-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #2c3e50;
+    padding: 20px;
+}
+
+.login-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+}
+
+.login-header p {
+    font-size: 1.1rem;
+    color: #576574;
+}
+
+/* Área principal */
+.login-main {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+}
+
+/* Formulário */
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.login-form label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.login-form input {
+    padding: 12px;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+.login-form input:focus {
+    border-color: #4a90e2;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+}
+
+.login-form button {
+    background-color: #4a90e2;
+    color: white;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 1rem;
+}
+
+.login-form button:hover {
+    background-color: #357abd;
+}
+
+/* Mensagem de erro */
+.login-erro {
+    color: #e74c3c;
+    text-align: center;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+}
+
+/* Área de informações adicionais */
+.login-info {
+    text-align: center;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e9ecef;
+}
+
+.login-info a {
+    color: #4a90e2;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.login-info a:hover {
+    text-decoration: underline;
+}
+
+/* Rodapé */
+.login-footer {
+    text-align: center;
+    margin-top: 2rem;
+    color: #888;
+    font-size: 0.9rem;
+}
+
+/* Responsividade */
+@media (max-width: 480px) {
+    .login-container {
+        padding: 10px;
+    }
+
+    .login-header h1 {
+        font-size: 2rem;
+    }
+
+    .login-main {
+        padding: 1.5rem;
+    }
+
+    .login-form input,
+    .login-form button {
+        padding: 10px;
+    }
+}
+
+/* Animações */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.login-container {
+    animation: fadeIn 0.5s ease-out;
+}
