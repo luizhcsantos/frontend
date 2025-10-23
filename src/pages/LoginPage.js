@@ -16,17 +16,15 @@ function LoginPage() {
         setErro('');
         setIsLoading(true);
 
-        // Lógica para autenticar o usuário
         try {
             const response = await api.post('/auth/login', {
-                email,
-                senha
+                username: email,
+                password: senha
             });
             if (response.status === 200) {
-                const data = await response.data;
-                // Armazena o token e informações do usuário no localStorage ou contexto global
+                const data = response.data; 
+    
                 localStorage.setItem('token', data.token);
-                localStorage.setItem('user', JSON.stringify(data.user));
             }
             navigate('/dashboard');
         } catch (error) {
