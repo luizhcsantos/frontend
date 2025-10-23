@@ -1,50 +1,73 @@
-import React from 'react';
-import NavigationButton from '../components/NavigationButton';
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../contexts/AuthContext';
+import api from '../services/api';
+import HistoricoDoacoes from '../components/doador/HistoricoDoacoes'; // Componente que você já tem
+import NavigationButton from '../components/NavigationButton'; // Botão que você já tem
 
-const user = {
-    name: 'João Silva',
-    email: 'joao.silva@email.com',
-    totalDonations: 5,
-};
+function DoadorDashboardPage() {
+    const { logout, getUserInfo } = useAuth();
+    const [perfil, setPerfil] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
 
-const donationHistory = [
-    { id: 1, date: '2024-05-10', amount: 100, institution: 'Asilo Esperança' },
-    { id: 2, date: '2024-04-22', amount: 50, institution: 'Lar dos Idosos' },
-    { id: 3, date: '2024-03-15', amount: 75, institution: 'Casa de Apoio' },
-    { id: 4, date: '2024-02-28', amount: 120, institution: 'Asilo Esperança' },
-    { id: 5, date: '2024-01-10', amount: 80, institution: 'Lar dos Idosos' },
-];
+    useEffect(() => {
+        const fetchPerfil = async () => {
+            const userInfo = getUserInfo();
+            if (!userInfo || userInfo.type !== 'doador') {
+                setError('Token inválido ou usuário não é um doador.');
+                setLoading(false);
+                return;
+            }
 
-const DoadorDashboardPage = () => {
+            try {
+                // Chama o novo endpoint GET /api/doador/{id}
+                const response = await api.get(`/doador/${userInfo.id}`);
+                setPerfil(response.data);
+            } catch (err) {
+                setError('Falha ao carregar perfil. Tente novamente.');
+                console.error(err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchPerfil();
+    }, [getUserInfo]);
+
+    if (loading) {
+        return <div>Carregando...</div>;
+    }
+
+    if (error) {
+        return <div>{error} <button onClick={logout}>Fazer Login Novamente</button></div>;
+    }
+
+    // Tenta extrair o nome (seja de PF ou PJ)
+    const nome = perfil ? (perfil.pessoaFisicaNome || perfil.pessoaJuridicaNome) : 'Doador';
+
     return (
-        <div style={{ maxWidth: 600, margin: '40px auto', fontFamily: 'sans-serif' }}>
-            <NavigationButton />
-            <h2>Bem-vindo, {user.name}!</h2>
-            <div style={{ marginBottom: 24, padding: 16, background: '#f5f5f5', borderRadius: 8 }}>
-                <p><strong>Email:</strong> {user.email}</p>
-                <p><strong>Total de doações:</strong> {user.totalDonations}</p>
-            </div>
-            <h3>Histórico de Doações</h3>
-            <table style={{ width: '100%', borderCollapse: 'collapse', background: '#fff' }}>
-                <thead>
-                    <tr>
-                        <th style={{ borderBottom: '1px solid #ccc', padding: 8 }}>Data</th>
-                        <th style={{ borderBottom: '1px solid #ccc', padding: 8 }}>Instituição</th>
-                        <th style={{ borderBottom: '1px solid #ccc', padding: 8 }}>Valor (R$)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {donationHistory.map(donation => (
-                        <tr key={donation.id}>
-                            <td style={{ borderBottom: '1px solid #eee', padding: 8 }}>{donation.date}</td>
-                            <td style={{ borderBottom: '1px solid #eee', padding: 8 }}>{donation.institution}</td>
-                            <td style={{ borderBottom: '1px solid #eee', padding: 8 }}>{donation.amount}</td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+        <div className="dashboard-container">
+            <header className="dashboard-header">
+                {/* Usa o nome vindo do backend */}
+                <h1>Bem-vindo, {nome}!</h1>
+                <NavigationButton to="/" onClick={logout}>
+                    Sair
+                </NavigationButton>
+            </header>
+            
+            <section className="dashboard-content">
+                <h2>Seu Perfil</h2>
+                <p><strong>Email:</strong> {perfil.doadorEmail}</p>
+                <p><strong>Telefone:</strong> {perfil.doadorTelefone}</p>
+                {/* Adicione outros campos do perfil aqui */}
+            </section>
+
+            <section className="dashboard-history">
+                {/* Renderiza seu componente estático de histórico */}
+                <HistoricoDoacoes />
+            </section>
         </div>
     );
-};
+}
 
 export default DoadorDashboardPage;

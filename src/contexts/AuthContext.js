@@ -22,7 +22,27 @@ export const AuthProvider = ({ children }) => {
 
     const value = { user, login, logout };
 
-    return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+    const getUserInfo = () => {
+        const token = localStorage.getItem('token');
+        if (!token) return null;
+
+        try {
+            const part = token.split('.')[1];
+            return {
+                type: part[1],
+                id: parts[2]
+            }; 
+        } catch (error) {
+            console.error('Erro ao decodificar token:', error);
+            return null;
+        }
+    }
+
+    return (
+        <AuthContext.Provider value={{ isAuthenticated, token, login, logout, getUserInfo }}>
+            {children}
+        </AuthContext.Provider>
+    ); 
 };
 
 // Hook customizado para facilitar o uso do contexto nos componentes
