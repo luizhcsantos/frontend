@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { use, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import '../styles/LoginPage.css';
 import NavigationButton from '../components/NavigationButton';
 import api from '../services/api';
@@ -7,6 +8,7 @@ import api from '../services/api';
 function LoginPage() {
     const [email, setEmail] = useState('');
     const [senha, setSenha] = useState('');
+    const {login} = useAuth(); 
     const [erro, setErro] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
@@ -24,13 +26,16 @@ function LoginPage() {
             if (response.status === 200) {
                 const data = response.data; 
     
-                localStorage.setItem('token', data.token);
+                login(data.token);
             }
             navigate('/dashboard');
         } catch (error) {
-            setErro('Erro ao fazer login. Tente novamente.');
+            const msgErro = error.response?.data?.error || 'Erro ao fazer login. Tente novamente.';
+            setErro(msgErro);
             console.log('Erro: ', error);
-        }    
+        } finally {
+            setIsLoading(false);
+        } 
     };
 
     return (
