@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/LoginPage.css';
 import NavigationButton from '../components/NavigationButton';
+import api from '../services/api';
 
 function LoginPage() {
     const [email, setEmail] = useState('');
@@ -17,16 +18,12 @@ function LoginPage() {
 
         // Lógica para autenticar o usuário
         try {
-            const response = await fetch('http://localhost:8080/api/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ email, senha })
-
+            const response = await api.post('/auth/login', {
+                email,
+                senha
             });
-            if (response.ok) {
-                const data = await response.json(); 
+            if (response.status === 200) {
+                const data = await response.data;
                 // Armazena o token e informações do usuário no localStorage ou contexto global
                 localStorage.setItem('token', data.token);
                 localStorage.setItem('user', JSON.stringify(data.user));

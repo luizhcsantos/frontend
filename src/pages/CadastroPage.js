@@ -16,87 +16,77 @@ function CadastroPage() {
     const [cpf, setCpf] = useState('');
     const [cnpj, setCnpj] = useState('');
     const [nomeFantasia, setNomeFantasia] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
+
+    const tipoDoador = tipoUsuario === 'Pessoa Física' ? 'PF' : 'PJ';
     
     const navigate = useNavigate();
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setErro('');
-        setIsLoading(true);
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        setErrorMessage('');
 
-        // Validação básica
-        const validations = [
-            { condition: !email, message: 'Email é obrigatório' },
-            { condition: !senha, message: 'Senha é obrigatória' },
-            { condition: senha !== confirmarSenha, message: 'As senhas não conferem' },
-            { condition: !telefone, message: 'Telefone é obrigatório' },
-            { condition: !nome, message: 'Nome/Razão Social é obrigatório' },
-            { condition: tipoUsuario === 'Pessoa Física' && !cpf, message: 'CPF é obrigatório' },
-            { condition: tipoUsuario === 'Pessoa Jurídica' && !cnpj, message: 'CNPJ é obrigatório' }
-        ];
-
-        const error = validations.find(v => v.condition);
-        if (error) {
-            setErro(error.message);
-            setIsLoading(false);
+        // 1. Determinar o endpoint correto baseado no estado 'tipoDoador'
+        let endpoint = '';
+        if (tipoDoador === 'PF') {
+            endpoint = 'http://localhost:8080/api/doador/pf';
+        } else if (tipoDoador === 'PJ') {
+            endpoint = 'http://localhost:8080/api/doador/pj';
+        } else {
+            setErrorMessage('Erro: Tipo de doador não selecionado.');
             return;
         }
 
+        // 2. Montar o objeto 'data', mas ajustando os nomes para o DTO do backend
+       const data = {};
+
+        if (tipoDoador === 'PF') {
+            // Mapeia para os campos exatos do PessoaFisicaDTO
+            data.pessoaFisicaDtoEmail = event.target.email.value;
+            data.pessoaFisicaDtoSenha = event.target.senha.value;
+            data.pessoaFisicaDtoTelefone = event.target.telefone.value;
+            data.pessoaFisicaDtoNome = event.target.nomeCompleto.value;
+            data.pessoaFisicaDtoCpf = event.target.cpf.value;
+            // data.dataNascimento = event.target.dataNascimento.value; (Seu DTO não parece ter data de nascimento)
+        } else {
+            // Mapeia para os campos exatos do PessoaJuridicaDTO
+            data.pessoaJuridicaDtoEmail = event.target.email.value;
+            data.pessoaJuridicaDtoSenha = event.target.senha.value;
+            data.pessoaJuridicaDtoTelefone = event.target.telefone.value;
+            data.pessoaJuridicaDtoNomeFantasia = event.target.razaoSocial.value;
+            data.pessoaJuridicaDtoCnpj = event.target.cnpj.value;
+            // data.inscricaoEstadual = event.target.inscricaoEstadual.value; (Seu DTO não parece ter IE)
+        }
+
+        console.log('Enviando requisição para:', endpoint, data);
+
         try {
-            const requestBody = {
-                email: email.trim(),
-                senha: senha,
-                telefone: telefone.replace(/\D/g, ''),
-                tipo: tipoUsuario === 'Pessoa Física' ? 'PF' : 'PJ',
-                nomeCompleto: tipoUsuario === 'Pessoa Física' ? nome.trim() : null,
-                cpf: tipoUsuario === 'Pessoa Física' ? cpf.replace(/\D/g, '') : null,
-                razaoSocial: tipoUsuario === 'Pessoa Jurídica' ? nome.trim() : null,
-                nomeFantasia: tipoUsuario === 'Pessoa Jurídica' ? nomeFantasia.trim() : null,
-                cnpj: tipoUsuario === 'Pessoa Jurídica' ? cnpj.replace(/\D/g, '') : null
-            };
-            console.log('Enviando requisição:', requestBody);
-
-            console.log('Enviando requisição:', requestBody);
-
-            const response = await fetch('http://localhost:8080/api/cadastro', {
+            // 3. Usar o endpoint correto na requisição
+            const response = await fetch(endpoint, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(requestBody)
+                body: JSON.stringify(data),
             });
 
-            // Add detailed error logging
-            const responseText = await response.text();
-            console.log('Response status:', response.status);
-            console.log('Response headers:', Object.fromEntries(response.headers));
-            console.log('Response body:', responseText);
+            const responseData = await response.json(); // Renomeado para 'responseData'
 
             if (!response.ok) {
-                let errorMessage;
-                try {
-                    const errorData = JSON.parse(responseText);
-                    errorMessage = errorData.message || 'Erro desconhecido';
-                } catch {
-                    errorMessage = responseText || `HTTP error! status: ${response.status}`;
-                }
-                throw new Error(errorMessage);
+                // Captura a mensagem de erro do backend (ex: "E-mail já existe")
+                throw new Error(responseData.error || 'Falha no cadastro');
             }
 
-            const data = await response.json();
-            console.log('Resposta do servidor:', data);
-
-            alert('Cadastro realizado com sucesso! Faça login para continuar.');
-            navigate('/login');
+            console.log('Cadastro bem-sucedido:', responseData);
+            alert('Cadastro realizado com sucesso!');
+            navigate('/login'); // Redireciona para o login
 
         } catch (error) {
-            console.error('Erro completo:', error);
-            setErro(`Erro ao cadastrar: ${error.message}`);
-        } finally {
-            setIsLoading(false);
+            console.error('Erro no cadastro:', error);
+            // Mantenha seu log original para debug
+            console.error('Erro completo:', error); 
+            setErrorMessage(error.message);
         }
-
-        
     };
 
     const handleInputChange = (e) => {
@@ -174,12 +164,25 @@ function CadastroPage() {
                                 {tipoUsuario === 'Pessoa Física' ? 'Nome Completo' : 'Razão Social'}
                                 <input
                                     type="text"
+                                    name="nomeCompleto"
                                     value={nome}
                                     onChange={(e) => setNome(e.target.value)}
                                     required
                                 />
                             </label>
                         </div>
+                        {tipoUsuario === 'Pessoa Física' && (
+                            <div>
+                                <label>
+                                    Data de Nascimento
+                                    <input
+                                        type="date"
+                                        name="dataNascimento"
+                                        required
+                                    />
+                                </label>
+                            </div>
+                        )}
                         {tipoUsuario === 'Pessoa Jurídica' && (
                             <div>
                                 <label>
@@ -197,9 +200,9 @@ function CadastroPage() {
                     <div className='form-group'>
                         <div>
                             <label>
-                                {tipoUsuario === 'Pessoa Física' ? 'CPF' : 'CNPJ'}
                                 <input
                                     type="text"
+                                    name={tipoUsuario === 'Pessoa Física' ? 'cpf' : 'cnpj'}
                                     value={tipoUsuario === 'Pessoa Física' ? cpf : cnpj}
                                     onChange={(e) => {
                                         if (tipoUsuario === 'Pessoa Física') {
@@ -210,6 +213,7 @@ function CadastroPage() {
                                     }}
                                     required
                                 />
+                                />
                             </label>
                         </div>
                         <div>
@@ -217,6 +221,7 @@ function CadastroPage() {
                                 Telefone
                                 <input
                                     type="text"
+                                    name="telefone"
                                     value={telefone}
                                     onChange={(e) => setTelefone(maskTelefone(e.target.value))}
                                     required
@@ -231,6 +236,7 @@ function CadastroPage() {
                                 Email
                                 <input
                                     type="email"
+                                    name="email"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     required
@@ -245,6 +251,7 @@ function CadastroPage() {
                                 Senha
                                 <input
                                     type="password"
+                                    name="senha"
                                     value={senha}
                                     onChange={(e) => setSenha(e.target.value)}
                                     required
