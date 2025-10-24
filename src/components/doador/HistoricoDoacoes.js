@@ -1,8 +1,8 @@
 import React, {useState, useEffect} from "react";
-import {getHistorico} from '../services/doacaoService';
+import { getHistorico } from '../../services/doacaoService.js';
 
 
-const historicoDoacoes = () => {
+const HistoricoDoacoes = () => {
     const [doacoes, setDoacoes] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -50,4 +50,4 @@ const historicoDoacoes = () => {
     )
 };
 
-export default historicoDoacoes;
+export default HistoricoDoacoes;

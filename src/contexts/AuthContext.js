@@ -1,51 +1,55 @@
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react';
 
-// Cria o contexto
-const AuthContext = createContext(null);
+const AuthContext = createContext();
 
-// Cria o Provedor, que vai encapsular a aplicação
 export const AuthProvider = ({ children }) => {
-    // Estado para guardar os dados do usuário logado
-    const [user, setUser] = useState(null);
+    // 1. Definição do estado (corrige 'isAuthenticated' e 'token' not defined)
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [token, setToken] = useState(null);
 
-    // Função de login (em um app real, receberia um token da API)
-    const login = (userData) => {
-        setUser(userData);
-        // Ex: localStorage.setItem('userToken', userData.token);
+    useEffect(() => {
+        const storedToken = localStorage.getItem('token');
+        if (storedToken) {
+            setToken(storedToken);
+            setIsAuthenticated(true);
+        }
+    }, []);
+
+    const login = (token) => {
+        localStorage.setItem('token', token);
+        setToken(token);
+        setIsAuthenticated(true);
     };
 
-    // Função de logout
     const logout = () => {
-        setUser(null);
-        // Ex: localStorage.removeItem('userToken');
+        localStorage.removeItem('token');
+        setToken(null);
+        setIsAuthenticated(false);
     };
 
-    const value = { user, login, logout };
-
+    // 2. Função 'getUserInfo' 
     const getUserInfo = () => {
         const token = localStorage.getItem('token');
         if (!token) return null;
 
         try {
-            const part = token.split('.')[1];
+            const parts = token.split('-'); 
             return {
-                type: part[1],
-                id: parts[2]
-            }; 
-        } catch (error) {
-            console.error('Erro ao decodificar token:', error);
+                type: parts[1], // 'doador' ou 'admin'
+                id: parts[2]    // '1', '2', etc.
+            };
+        } catch (e) {
+            console.error("Erro ao decodificar token:", e);
             return null;
         }
-    }
+    };
 
     return (
+        // 3. 'value' com todas as propriedades corretas
         <AuthContext.Provider value={{ isAuthenticated, token, login, logout, getUserInfo }}>
             {children}
         </AuthContext.Provider>
-    ); 
+    );
 };
 
-// Hook customizado para facilitar o uso do contexto nos componentes
-export const useAuth = () => {
-    return useContext(AuthContext);
-};
+export const useAuth = () => useContext(AuthContext);
